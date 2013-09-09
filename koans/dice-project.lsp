@@ -20,18 +20,23 @@
 ;; reading the values, and re-rolling.
 
 
-;;  YOU WRITE THIS PART:
 (defclass dice-set ()
-  () ;; WRITE DICE-SET CLASS BODY HERE
-)
+  ((values :reader get-values :initform nil)))
 
 (defmethod get-values ((object dice-set))
-  ;; WRITE GET-VALUES METHOD DEFINITION HERE
-)
+  (slot-value object 'values))
 
 (defmethod roll (how-many (object dice-set))
-  ;; WRITE ROLL METHOD DEFINITION HERE
-)
+  (labels ((roll-helper ()
+	     (1+ (random 5))))
+    (let ((rolled-dices 
+	   (loop for i from 1 to how-many 
+	      collect (roll-helper))))
+      (if (slot-value object 'values)
+	  (mapcar #'(lambda (x)
+		      (push x (slot-value object 'values)))
+		  rolled-dices)
+	  (setf (slot-value object 'values) rolled-dices)))))
 
 
 (define-test test-create-dice-set

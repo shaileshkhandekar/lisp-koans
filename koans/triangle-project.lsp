@@ -18,7 +18,27 @@
 (define-condition triangle-error  (error) ())
 
 (defun triangle (a b c)
-  :write-me)
+  (labels ((invalid-len (x) 
+	     (let* ((s (truncate (/ (+ a b c) 2)))
+		    (abc-list (sort (list a b c) #'<))
+		    (p (first abc-list))
+		    (q (second abc-list))
+		    (r (third abc-list)))
+		 (or (and (< s a) (< s b) (< s c))
+		     (<= x 0) (<= s 0)
+		     (< (* (+ p (+ q r))
+			   (- r (- p q))
+			   (+ r (- p q))
+			   (+ p (- q r)))
+			1)))))
+    (if (or (invalid-len a) (invalid-len b) (invalid-len c))
+	(signal 'triangle-error)
+	(let ((abeq (= a b))
+	      (bceq (= b c))
+	      (aceq (= a c)))
+	  (cond ((and abeq bceq) :equilateral)
+		((or abeq bceq aceq) :isosceles)
+		((and (not abeq) (not bceq) (not aceq)) :scalene))))))
 
 
 (define-test test-equilateral-triangles-have-equal-sides

@@ -50,8 +50,22 @@
 ; Your goal is to write the score method.
 
 (defun score (dice)
-  ; You need to write this method
-)
+  (let* ((nums (make-array '9 :initial-contents '(0 0 0 0 0 0 0 0 0)))
+	 (result 0))
+    (progn
+      (mapcar #'(lambda (x) (when (and (> x 0) (< x 10)))
+			(incf (aref nums (1- x)))) dice)
+      (do ((i 0 (1+ i)))
+	  ((> i 8))
+	(when (> (aref nums i) 2)
+	  (decf (aref nums i) 3)
+	  (if (zerop i)
+	      (incf result 1000)
+	      (let ((q (* (1+ i) 100)))
+		(incf result q)))))
+      (incf result (* (aref nums 0) 100))
+      (incf result (* (aref nums 4) 50)))
+    result))
 
 (define-test test-score-of-an-empty-list-is-zero
     (assert-equal 0 (score nil)))
